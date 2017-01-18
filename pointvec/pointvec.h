@@ -1,3 +1,18 @@
+/* pointvec_t
+ *
+ * 	Structure that will hold a vector of vector of points.
+ * 	Each vector should be a "figure" made up of multiple points.
+ * 	Figures can be undone as a whole. It can never be half undone.
+ * 	The 'main' vector stores all of these "figures".
+ * 	The 'temp' vector is the current vector being constructed by the user.
+ * 	The 'temp' can be merge into 'main' by calling the merge() function.
+ * 	When merge() is called, 'temp' gets emptied so that the user can start
+ * 		building a new "figure".
+ *
+ * 	An 'addr' integer is kept to store what is the address for the next point added.
+ *
+ */
+
 #ifndef _POINTVEC_H
 #define _POINTVEC_H
 
@@ -6,91 +21,37 @@
 #include <cstdio>
 
 using std::vector;
-using std::cout;
 
 class pointvec_t {
 	vector< vector<point> > main;
 	vector<point> temp;
+	int addr;
 
 public:
+	pointvec_t() : addr(0) {};
+	pointvec_t(const int caddr) : addr(caddr) {};
+
+	unsigned int temp_size(){ return temp.size(); };
+
+	//Adds a point to current working vector.
 	void add(point &);
+
+	//Merges current vector into the main list of vectors.
 	void merge();
-	void undo(int &);
+
+	//Erases the 'temp' vector.
+	//If 'temp' is empty, erases the most recent vector in 'main'.
+	void undo();
+
+	//Prints 'main' and 'temp' into the terminal screen.
 	void display();
-	void save(const char *, int);
+
+	//Saves all points in a file, following the objects map .mif file format.
+	//See point.h for information about such format.
+	//'temp' is merged into 'main' before saving.
+	void save_to_file(const char *filename);
 };
 
-void pointvec_t::add(point &p){
-	if(!p.OOB()) temp.push_back(p);
-	else cout << "Out of bounds point at pointvec_t::add. Better to undo last action.\n";
-}
-
-void pointvec_t::merge(){
-	if(!temp.empty()){
-		main.resize(main.size()+1);
-		main[main.size()-1].swap(temp);
-		temp.clear();
-	}
-}
-
-void pointvec_t::undo(int &addr){
-	merge();
-	if(!main.empty()){
-		addr -= main[main.size()-1].size() * 2;
-		main.pop_back();
-	}
-}
-
-void pointvec_t::display(){
-	int col, row, nvecs, i;
-	bool good;
-
-	printf("   ");
-	for(i = 0; i < 40; printf("%2d ", i++));
-	printf("\n");
-
-	for(row = 29; row >= 0; row--){
-		printf("%2d: ", row);
-		for(col = 0; col < 40; col++){
-			good = false;
-			
-			for(nvecs = 0; nvecs < (int) main.size(); nvecs++){
-				for(i = 0; i < (int) main[nvecs].size(); i++){
-					if(main[nvecs][i].x == col && main[nvecs][i].y == row){
-						printf("0  ");
-						good = true;
-						break;
-					}
-				}
-			}
-			
-			if(!good)
-				for(i = 0; i < (int) temp.size(); i++)
-					if(temp[i].x == col && temp[i].y == row){
-						printf("0  ");
-						good = true;
-						break;
-					}
-			if(!good) printf("   ");
-		}
-		printf("\n");
-	}
-}
-
-void pointvec_t::save(const char *filename, int address){
-	int i, j;
-	FILE *fp;
-	
-	merge();
-
-	fp = fopen(filename, "w");
-	for(i = 0; i < (int) main.size(); i++){
-		for(j = 0; j < (int) main[i].size(); j++){
-			main[i][j].print(fp);
-		}
-	}
-	fprintf(fp, "\t%d: FFFF;\n\n", address);
-	fclose(fp);
-}
+#include <pointvec.hxx>
 
 #endif

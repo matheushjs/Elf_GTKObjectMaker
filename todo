@@ -1,0 +1,13 @@
+pointvec:
+	The point and pointvec classes are ready.
+	Now we need to bring the figure creator file here.
+	Then we need to make a wrapper file that will provide an "extern C" function that makes our global pointvec to be
+		converted into a global matrix of 1200 char[5] (possibly) that the drawer source files will use to draw on the UI.
+
+user interface:
+	everything left to be done.
+
+objects_drawer:
+	We need to make a function that receives a cairo_t and possibly a GtkWidget*
+		and paints the pointvec on screen.
+	We also need a file to parse char[5] into their respective charmaps.
