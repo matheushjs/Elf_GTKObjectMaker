@@ -15,9 +15,9 @@
  *
  * 	The vga_pos entry represents the position [0..1199] where the object should be printed.
  *
- * == class point
+ * == class Point
  *
- * 	The point class is supposed to represent a pair of entries vga_char and vga_pos.
+ * 	The Point class is supposed to represent a pair of entries vga_char and vga_pos.
  * 	For holding the vga char, a char[5] is used to hold the hexadecimal characters.
  * 	For the vga_pos, 2 integers (x and y) are used. When vga_pos is read from a file, 
  * 		it is converted to cartesian coordinates x and y. When printing,
@@ -44,7 +44,7 @@
 //Convenience macro for functions that receive (x,y) arguments, in this order.
 #define LINEAR_TO_CARTESIAN_XY(L) L%40,29-(L/40)
 
-class point {
+class Point {
 	char vga_char[5]; //Array allows for automatic operator= function.
 	int x, y;
 	int addr;
@@ -52,9 +52,9 @@ class point {
 
 	public:
 		//Initializers
-		point();
-		point(const int cx, const int cy) : x(cx), y(cy) {};
-		point(const int cx, const int cy, const int caddr) : x(cx), y(cy), addr(caddr) {};
+		Point() = default;
+		Point(const int cx, const int cy) : x(cx), y(cy) {};
+		Point(const int cx, const int cy, const int caddr) : x(cx), y(cy), addr(caddr) {};
 
 		//Accessing
 		int get_x(){ return x; };
@@ -68,11 +68,12 @@ class point {
 		void set_xy(const int cx, const int cy){ x = cx; y = cy; };
 		void set_addr(const int caddr){ addr = caddr; };
 		void set_vga_char(const char *str);
+		void offset(const int dx, const int dy){ x += dx; y += dy; };
 
-		//Prints point into FILE* following the object map .mif file format.
+		//Prints Point into FILE* following the object map .mif file format.
 		void print_to_file(FILE *);
 
-		//Checks if point is out of bounds (outside the 40x30 grid).
+		//Checks if Point is out of bounds (outside the 40x30 grid).
 		bool OOB();
 
 		//Adds a comment to be printed together with the vga_char entry.

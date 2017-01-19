@@ -1,4 +1,4 @@
-/* pointvec_t
+/* PointVec
  *
  * 	Structure that will hold a vector of vector of points.
  * 	Each vector should be a "figure" made up of multiple points.
@@ -16,25 +16,28 @@
 #ifndef _POINTVEC_H
 #define _POINTVEC_H
 
-#include "point.h"
+#include <point.h>
 #include <vector>
 #include <cstdio>
+#include <cstdlib>
 
 using std::vector;
 
-class pointvec_t {
-	vector< vector<point> > main;
-	vector<point> temp;
+typedef char VgaCharMatrix[40][30][5];
+
+class PointVec {
+	vector< vector<Point> > main;
+	vector<Point> temp;
 	int addr;
 
 public:
-	pointvec_t() : addr(0) {};
-	pointvec_t(const int caddr) : addr(caddr) {};
+	PointVec() : addr(0) {};
+	PointVec(const int caddr) : addr(caddr) {};
 
 	unsigned int temp_size(){ return temp.size(); };
 
-	//Adds a point to current working vector.
-	void add(point &);
+	//Adds a Point to current working vector.
+	void add(Point);
 
 	//Merges current vector into the main list of vectors.
 	void merge();
@@ -50,6 +53,11 @@ public:
 	//See point.h for information about such format.
 	//'temp' is merged into 'main' before saving.
 	void save_to_file(const char *filename);
+	void save_to_file(FILE *filename);
+	
+	//Creates a 40x30 (colxrow) matrix storing vga_char sequences.
+	VgaCharMatrix &get_vga_char_matrix(void);
+	void destroy_vga_char_matrix(VgaCharMatrix &m){ std::free(&m); };
 };
 
 #include <pointvec.hxx>
