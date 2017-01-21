@@ -215,6 +215,12 @@ void create_figure_activated(GtkWidget *wid){
 		return;
 	}
 
+	sscanf(global_info.vga_char, "%4x", &k);
+	if(k & 0x1000){
+		fprintf(stderr, "The \"size\" bit cannot be set to '1'. Feel free to use the other 3 bits at will.\n");
+		return;
+	}
+
 	if(g_ascii_strcasecmp(global_info.shape, "dot") == 0){
 		comm = g_strdup_printf("Dot (%d, %d)", global_info.x, global_info.y);
 		c_figure_maker_add_point(global_fig, global_info.x, global_info.y, global_info.vga_char, comm);
