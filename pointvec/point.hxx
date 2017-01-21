@@ -22,7 +22,7 @@ bool Point::OOB(){
 }
 
 void Point::print_to_file(FILE *fp){
-	fprintf(fp, "\t%d: %4s; --%s\n", addr, (char *) vga_char, comment.c_str());
+	fprintf(fp, "\t%d: %4s; -- (%d,%d) %s\n", addr, (char *) vga_char, x, y, comment.c_str());
 	fprintf(fp, "\t%d: %04X;\n", addr+1, CARTESIAN_TO_LINEAR(x, y));
 }
 

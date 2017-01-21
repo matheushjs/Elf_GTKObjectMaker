@@ -39,7 +39,7 @@ public:
 	//Adds a Point to current working vector.
 	void add(Point);
 
-	//Merges current vector into the main list of vectors.
+	//Merges current vector, even if empty, into the main list of vectors.
 	void merge();
 
 	//Erases the 'temp' vector.

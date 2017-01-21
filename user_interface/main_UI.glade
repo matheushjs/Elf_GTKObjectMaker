@@ -2,10 +2,56 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.12"/>
+  <object class="GtkAdjustment" id="double_adjustment">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="double_adjustment1">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-undo</property>
+  </object>
+  <object class="GtkAdjustment" id="interval_adjustment">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="interval_adjustment1">
+    <property name="lower">-1000</property>
+    <property name="upper">1000</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="x_adjustment">
+    <property name="upper">39</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="x_adjustment1">
+    <property name="lower">-39</property>
+    <property name="upper">39</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="y_adjustment">
+    <property name="upper">29</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="y_adjustment1">
+    <property name="lower">-29</property>
+    <property name="upper">29</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
   </object>
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
@@ -75,7 +121,7 @@
                 <property name="name">shape_box</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">6</property>
-                <signal name="show" handler="shape_box_demux" object="radiobutton1" swapped="yes"/>
+                <signal name="show" handler="shape_box_demux" object="radiobutton20" swapped="yes"/>
                 <child>
                   <object class="GtkLabel" id="label2">
                     <property name="visible">True</property>
@@ -96,9 +142,9 @@
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkRadioButton" id="radiobutton1">
-                        <property name="label" translatable="yes">Rectangle</property>
-                        <property name="name">rectangle</property>
+                      <object class="GtkRadioButton" id="radiobutton20">
+                        <property name="label" translatable="yes">Dot</property>
+                        <property name="name">dot</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -114,6 +160,24 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkRadioButton" id="radiobutton1">
+                        <property name="label" translatable="yes">Rectangle</property>
+                        <property name="name">rectangle</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="xalign">0</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">radiobutton20</property>
+                        <signal name="toggled" handler="shape_box_demux" swapped="no"/>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkRadioButton" id="radiobutton2">
                         <property name="label" translatable="yes">Triangle (upward base)</property>
                         <property name="name">utriangle</property>
@@ -121,15 +185,14 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="xalign">0</property>
-                        <property name="active">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">radiobutton1</property>
+                        <property name="group">radiobutton20</property>
                         <signal name="toggled" handler="shape_box_demux" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -140,15 +203,14 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="xalign">0</property>
-                        <property name="active">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">radiobutton1</property>
+                        <property name="group">radiobutton20</property>
                         <signal name="toggled" handler="shape_box_demux" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
@@ -159,15 +221,14 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="xalign">0</property>
-                        <property name="active">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">radiobutton1</property>
+                        <property name="group">radiobutton20</property>
                         <signal name="toggled" handler="shape_box_demux" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">3</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                   </object>
@@ -211,12 +272,14 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton10">
                         <property name="label" translatable="yes">x</property>
+                        <property name="name">f1</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="xalign">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -226,6 +289,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton11">
                         <property name="label" translatable="yes">|x|</property>
+                        <property name="name">f2</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -233,6 +297,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -242,6 +307,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton12">
                         <property name="label" translatable="yes">x**2</property>
+                        <property name="name">f3</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -249,6 +315,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -258,6 +325,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton13">
                         <property name="label" translatable="yes">2**x</property>
+                        <property name="name">f4</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -265,6 +333,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -274,6 +343,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton14">
                         <property name="label" translatable="yes">x**3</property>
+                        <property name="name">f5</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -281,6 +351,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -290,6 +361,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton15">
                         <property name="label" translatable="yes">|x**3|</property>
+                        <property name="name">f6</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -297,6 +369,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -306,6 +379,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton16">
                         <property name="label" translatable="yes">cos(x)</property>
+                        <property name="name">f7</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -313,6 +387,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -322,6 +397,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton17">
                         <property name="label" translatable="yes">|cos(x)|</property>
+                        <property name="name">f8</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -329,6 +405,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -338,6 +415,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton18">
                         <property name="label" translatable="yes">sin(x)</property>
+                        <property name="name">f9</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -345,6 +423,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton10</property>
+                        <signal name="toggled" handler="function_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -354,6 +433,7 @@
                     <child>
                       <object class="GtkRadioButton" id="radiobutton19">
                         <property name="label" translatable="yes">|sin(x)|</property>
+                        <property name="name">f10</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -413,6 +493,7 @@
                         <property name="xalign">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="filling_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -430,6 +511,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton5</property>
+                        <signal name="toggled" handler="filling_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -447,6 +529,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton5</property>
+                        <signal name="toggled" handler="filling_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -465,6 +548,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton5</property>
+                        <signal name="toggled" handler="filling_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -482,6 +566,7 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radiobutton5</property>
+                        <signal name="toggled" handler="filling_radio_button_toggled" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -522,8 +607,15 @@
                 </child>
                 <child>
                   <object class="GtkSpinButton" id="spinbutton2">
+                    <property name="name">x</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="max_length">2</property>
+                    <property name="caps_lock_warning">False</property>
+                    <property name="input_purpose">digits</property>
+                    <property name="adjustment">x_adjustment</property>
+                    <property name="numeric">True</property>
+                    <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -533,8 +625,15 @@
                 </child>
                 <child>
                   <object class="GtkSpinButton" id="spinbutton3">
+                    <property name="name">y</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="max_length">2</property>
+                    <property name="caps_lock_warning">False</property>
+                    <property name="input_purpose">digits</property>
+                    <property name="adjustment">y_adjustment</property>
+                    <property name="numeric">True</property>
+                    <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -600,8 +699,15 @@ to function)</property>
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="spinbutton4">
+                        <property name="name">width</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="max_length">2</property>
+                        <property name="caps_lock_warning">False</property>
+                        <property name="input_purpose">digits</property>
+                        <property name="adjustment">x_adjustment1</property>
+                        <property name="numeric">True</property>
+                        <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -610,8 +716,15 @@ to function)</property>
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="spinbutton5">
+                        <property name="name">height</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="max_length">2</property>
+                        <property name="caps_lock_warning">False</property>
+                        <property name="input_purpose">digits</property>
+                        <property name="adjustment">y_adjustment1</property>
+                        <property name="numeric">True</property>
+                        <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -685,8 +798,16 @@ to function)</property>
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="spinbutton6">
+                        <property name="name">stretch_x</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="max_length">10</property>
+                        <property name="caps_lock_warning">False</property>
+                        <property name="input_purpose">number</property>
+                        <property name="adjustment">double_adjustment</property>
+                        <property name="digits">4</property>
+                        <property name="numeric">True</property>
+                        <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -695,8 +816,16 @@ to function)</property>
                     </child>
                     <child>
                       <object class="GtkSpinButton" id="spinbutton7">
+                        <property name="name">stretch_f</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="max_length">10</property>
+                        <property name="caps_lock_warning">False</property>
+                        <property name="input_purpose">digits</property>
+                        <property name="adjustment">double_adjustment1</property>
+                        <property name="digits">4</property>
+                        <property name="numeric">True</property>
+                        <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -721,9 +850,16 @@ to function)</property>
                         <property name="spacing">3</property>
                         <child>
                           <object class="GtkSpinButton" id="spinbutton1">
+                            <property name="name">xi</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="max_length">5</property>
+                            <property name="caps_lock_warning">False</property>
+                            <property name="input_purpose">digits</property>
                             <property name="orientation">vertical</property>
+                            <property name="adjustment">interval_adjustment</property>
+                            <property name="numeric">True</property>
+                            <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -733,9 +869,16 @@ to function)</property>
                         </child>
                         <child>
                           <object class="GtkSpinButton" id="spinbutton8">
+                            <property name="name">xe</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="max_length">5</property>
+                            <property name="caps_lock_warning">False</property>
+                            <property name="input_purpose">digits</property>
                             <property name="orientation">vertical</property>
+                            <property name="adjustment">interval_adjustment1</property>
+                            <property name="numeric">True</property>
+                            <signal name="value-changed" handler="spin_buttons_changed" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -786,6 +929,10 @@ to function)</property>
                   <object class="GtkEntry" id="entry1">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="max_length">4</property>
+                    <property name="caps_lock_warning">False</property>
+                    <property name="placeholder_text" translatable="yes">Hexadecimal vga_char</property>
+                    <signal name="changed" handler="vga_char_buffer_store" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -812,6 +959,7 @@ to function)</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <signal name="clicked" handler="create_figure_activated" object="drawing_area" swapped="yes"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -828,6 +976,7 @@ to function)</property>
                     <property name="use_stock">True</property>
                     <property name="image_position">right</property>
                     <property name="always_show_image">True</property>
+                    <signal name="clicked" handler="undo_activated" object="drawing_area" swapped="yes"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

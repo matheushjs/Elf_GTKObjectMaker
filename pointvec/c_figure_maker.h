@@ -33,6 +33,9 @@ void c_figure_maker_add_down_triangle(CFigureMaker *fig, int x, int y, const cha
 void c_figure_maker_add_up_triangle(CFigureMaker *fig, int x, int y, const char vga_char[5],
 		const char *comment, int width, int height);
 
+void c_figure_maker_merge(CFigureMaker *fig);
+void c_figure_maker_undo(CFigureMaker *fig);
+
 VgaCharMatrix *c_figure_maker_get_matrix(const CFigureMaker *fig);
 void c_figure_maker_destroy_matrix(VgaCharMatrix *m);
 void c_figure_maker_save_to_file(const CFigureMaker *fig, FILE *fp);

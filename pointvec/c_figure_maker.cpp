@@ -44,6 +44,14 @@ void c_figure_maker_add_up_triangle(CFigureMaker *fig, int x, int y, const char 
 	((FigureMaker*) fig)->add_up_triangle(pt, width, height);
 }
 
+void c_figure_maker_merge(CFigureMaker *fig){
+	((FigureMaker *) fig)->merge();
+}
+
+void c_figure_maker_undo(CFigureMaker *fig){
+	((FigureMaker *) fig)->undo();
+}
+
 VgaCharMatrix *c_figure_maker_get_matrix(const CFigureMaker *fig){
 	return &((FigureMaker *) fig)->get_vga_char_matrix();
 }

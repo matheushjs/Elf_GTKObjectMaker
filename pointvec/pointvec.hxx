@@ -19,17 +19,16 @@ void PointVec::add(Point p){
 	} else cerr << "PointVec::add(): Did not add OOB Point.\n";
 }
 
+//Merges even if temp is empty.
 void PointVec::merge(){
-	if(!temp.empty()){
-		main.resize(main.size()+1);
-		main[main.size()-1].swap(temp);
-		temp.clear();
-	} else cerr << "Attempted to merge an empty vector."
-		<< " Did not add any vector to the main list.\n";
+	cout << "Merging\n";
+	main.resize(main.size()+1);
+	main[main.size()-1].swap(temp);
+	temp.clear();
 }
 
 void PointVec::undo(){
-	merge(); //If temp is empty, it isn't merged.
+	if(temp.size()) merge(); //If temp is empty, we undo it.
 	if(!main.empty()){
 		addr -= main[main.size()-1].size() * 2;
 		main.pop_back();

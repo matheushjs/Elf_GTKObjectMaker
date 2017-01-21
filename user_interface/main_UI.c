@@ -4,6 +4,17 @@
 #include <stdio.h>
 
 CFigureMaker *global_fig = NULL;
+struct {
+	int init_addr;
+	gchar shape[100];
+	gchar func_type[100];
+	gchar fill[100];
+	int x, y;
+	int width, height;
+	double stretch_x, stretch_f;
+	int xi, xe; //interval
+	gchar vga_char[5];
+} global_info = { 0, "dot", "x", "None", 0, 0, 0, 0, 0.0, 0.0, 0, 0, "" };
 
 static
 void destroy_global_fig(){
@@ -21,6 +32,7 @@ void init_address_activate(GtkEntry *entry, gpointer data){
 	text = gtk_entry_get_text(entry);
 
 	if(sscanf(text, "%d", &addr) != 0){
+		global_info.init_addr = addr;
 		global_fig = c_figure_maker_new(addr);
 		gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
 		new_text = g_strdup_printf("%d", addr);
@@ -67,9 +79,9 @@ void show_hide_foreach(GtkWidget *wid, gpointer data){
 
 	for(i = 0; i < sizeof(function_activate)/sizeof(function_activate[0]); i++){
 		if(g_strcmp0(name, function_activate[i]) == 0){
-			if(GPOINTER_TO_INT(data) == 1)
-				gtk_widget_hide(wid);
-			else gtk_widget_show(wid);
+			if(GPOINTER_TO_INT(data) == 2)
+				gtk_widget_show(wid);
+			else gtk_widget_hide(wid);
 			return;
 		}
 	}
@@ -85,45 +97,121 @@ void show_hide_foreach(GtkWidget *wid, gpointer data){
 		gtk_container_foreach(GTK_CONTAINER(wid), GtkCallback(show_hide_foreach), data);
 }
 
+//Demultiplexes the selected shapes to hide/show the due other boxes.
 static
-void show_hide_boxes(GtkRadioButton *but){
+void shape_box_demux(GtkRadioButton *but){
+	//When you switch buttons, the one that became innactive also
+	//emits the 'toggled' signal. This conditional prevents double
+	//execution of this function.
+	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(but))) return;
+
 	GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(but));
-	
-	const gchar *name;
-	name = gtk_widget_get_name(GTK_WIDGET(but));
-	
+	const gchar *name = gtk_widget_get_name(GTK_WIDGET(but));
+	g_stpcpy(global_info.shape, name);
+
 	if(g_strcmp0(name, "rectangle") == 0
 	|| g_strcmp0(name, "utriangle") == 0
 	|| g_strcmp0(name, "btriangle") == 0)
 		gtk_container_foreach(GTK_CONTAINER(win), GtkCallback(show_hide_foreach), GINT_TO_POINTER(1));
 	else if(g_strcmp0(name, "function") == 0)
 		gtk_container_foreach(GTK_CONTAINER(win), GtkCallback(show_hide_foreach), GINT_TO_POINTER(2));
+	else if(g_strcmp0(name, "dot") == 0)
+		gtk_container_foreach(GTK_CONTAINER(win), GtkCallback(show_hide_foreach), GINT_TO_POINTER(3));
 	else g_assert(FALSE);
+
+	printf("%d\n", global_info.init_addr);
+	printf("%s\n", global_info.shape);
+	printf("%s\n", global_info.func_type);
+	printf("%s\n", global_info.fill);
+	printf("x,y: %d %d\n", global_info.x, global_info.y);
+	printf("w,h: %d %d\n", global_info.width, global_info.height);
+	printf("w,h: %lf %lf\n", global_info.stretch_x, global_info.stretch_f);
+	printf("xi,xe: %d %d\n", global_info.xi, global_info.xe);
+	printf("%s\n", global_info.vga_char);
 }
 
-//Demultiplexes the selected shapes to hide/show the due other boxes.
 static
-void shape_box_demux(GtkRadioButton *radio_but){
-	GSList *buttons;
+void function_radio_button_toggled(GtkRadioButton *button, gpointer data){
+	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) return;
+	g_stpcpy(global_info.func_type, gtk_button_get_label(GTK_BUTTON(button)));
+}
 
-	//When you switch buttons, the one that became innactive also
-	//emits the 'toggled' signal. This conditional prevents double
-	//execution of this function.
-	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radio_but))) return;
+static
+void filling_radio_button_toggled(GtkRadioButton *button, gpointer data){
+	if(!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) return;
+	g_stpcpy(global_info.fill, gtk_button_get_label(GTK_BUTTON(button)));
+}
 
-	buttons = gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio_but));
+static
+void spin_buttons_changed(GtkSpinButton *but, gpointer data){
+	const gchar *name = gtk_widget_get_name(GTK_WIDGET(but));
 
-	printf("Run\n");
+	if(g_strcmp0(name, "x") == 0){
+		global_info.x = gtk_spin_button_get_value_as_int(but);
+	} else if(g_strcmp0(name, "y") == 0){
+		global_info.y = gtk_spin_button_get_value_as_int(but);
+	} else if(g_strcmp0(name, "width") == 0){
+		global_info.width = gtk_spin_button_get_value_as_int(but);
+	} else if(g_strcmp0(name, "height") == 0){
+		global_info.height = gtk_spin_button_get_value_as_int(but);
+	} else if(g_strcmp0(name, "stretch_x") == 0){
+		global_info.stretch_x = gtk_spin_button_get_value(but);
+	} else if(g_strcmp0(name, "stretch_f") == 0){
+		global_info.stretch_f = gtk_spin_button_get_value(but);
+	} else if(g_strcmp0(name, "xi") == 0){
+		global_info.xi = gtk_spin_button_get_value_as_int(but);
+	} else if(g_strcmp0(name, "xe") == 0){
+		global_info.xe = gtk_spin_button_get_value_as_int(but);
+	} else g_assert(FALSE);
+}
 
-	while(buttons){
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(buttons->data))) break;
-		buttons = g_slist_next(buttons);
-	}
+static
+void vga_char_buffer_store(GtkEntry *ent){
+	const gchar *text;
+	text = gtk_entry_get_text(ent);
+	g_stpcpy(global_info.vga_char, text);
+}
+
+static
+void create_figure_activated(GtkWidget *wid){
+	guint k;
+	gchar *comm = NULL;
 	
-	g_assert(buttons); //If buttons is false, no buttons are activated, which is impossible.
-	GtkRadioButton *but = GTK_RADIO_BUTTON(buttons->data);
+	if(sscanf(global_info.vga_char, "%1x%1x%1x%1x",&k,&k,&k,&k) != 4){
+		fprintf(stderr, "vga_write is not a hexadecimal number\n");
+		return;
+	}
 
-	show_hide_boxes(but);
+	if(g_ascii_strcasecmp(global_info.shape, "dot") == 0){
+		comm = g_strdup_printf("Dot (%d, %d)", global_info.x, global_info.y);
+		c_figure_maker_add_point(global_fig, global_info.x, global_info.y, global_info.vga_char, comm);
+		c_figure_maker_merge(global_fig);
+	} else if(g_ascii_strcasecmp(global_info.shape, "rectangle") == 0){
+		comm = g_strdup_printf("Rectangle (%d, %d) w: %d, h: %d", global_info.x, global_info.y, global_info.width, global_info.height);
+		c_figure_maker_add_rectangle(global_fig, global_info.x, global_info.y, global_info.vga_char, comm, global_info.width, global_info.height);
+		c_figure_maker_merge(global_fig);
+	} else if(g_ascii_strcasecmp(global_info.shape, "utriangle") == 0){
+		comm = g_strdup_printf("Base-Up Triangle (%d, %d) w: %d, h: %d", global_info.x, global_info.y, global_info.width, global_info.height);
+		c_figure_maker_add_up_triangle(global_fig, global_info.x, global_info.y, global_info.vga_char, comm, global_info.width, global_info.height);
+		c_figure_maker_merge(global_fig);
+	} else if(g_ascii_strcasecmp(global_info.shape, "btriangle") == 0){
+		comm = g_strdup_printf("Base-Down Triangle (%d, %d) w: %d, h: %d", global_info.x, global_info.y, global_info.width, global_info.height);
+		c_figure_maker_add_down_triangle(global_fig, global_info.x, global_info.y, global_info.vga_char, comm, global_info.width, global_info.height);
+		c_figure_maker_merge(global_fig);
+	} else if(g_ascii_strcasecmp(global_info.shape, "function") == 0){
+		comm = g_strdup_printf("Function (%d, %d) w: %d, h: %d", global_info.x, global_info.y, global_info.width, global_info.height);
+		//function here.
+		c_figure_maker_merge(global_fig);
+	} else g_assert(FALSE);
+
+	if(comm) g_free(comm);
+	gtk_widget_queue_draw(wid);
+}
+
+static
+void undo_activated(GtkWidget *wid){
+	c_figure_maker_undo(global_fig);
+	gtk_widget_queue_draw(wid);
 }
 
 static
@@ -131,6 +219,12 @@ void register_signal_handlers(GtkBuilder *build){
 	gtk_builder_add_callback_symbol(build, "destroy_global_fig", G_CALLBACK(destroy_global_fig));
 	gtk_builder_add_callback_symbol(build, "init_address_activate", G_CALLBACK(init_address_activate));
 	gtk_builder_add_callback_symbol(build, "shape_box_demux", G_CALLBACK(shape_box_demux));
+	gtk_builder_add_callback_symbol(build, "function_radio_button_toggled", G_CALLBACK(function_radio_button_toggled));
+	gtk_builder_add_callback_symbol(build, "filling_radio_button_toggled", G_CALLBACK(filling_radio_button_toggled));
+	gtk_builder_add_callback_symbol(build, "spin_buttons_changed", G_CALLBACK(spin_buttons_changed));
+	gtk_builder_add_callback_symbol(build, "vga_char_buffer_store", G_CALLBACK(vga_char_buffer_store));
+	gtk_builder_add_callback_symbol(build, "create_figure_activated", G_CALLBACK(create_figure_activated));
+	gtk_builder_add_callback_symbol(build, "undo_activated", G_CALLBACK(undo_activated));
 }
 
 GtkWindow *main_UI_build_window(){
