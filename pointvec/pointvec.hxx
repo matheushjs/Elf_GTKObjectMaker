@@ -42,11 +42,13 @@ void PointVec::display(){
 	for(uint i = 0; i < main.size(); i++)
 		for(uint j = 0; j < main[i].size(); j++)
 			cout << main[i][j].get_x() << " "
-				<< main[i][j].get_y() << "\n";
+				<< main[i][j].get_y() << " "
+				<< main[i][j].get_vga_char() << "\n";
 
 	for(uint i = 0; i < temp.size(); i++)
 		cout << temp[i].get_x() << " "
-			<< temp[i].get_y() << "\n";
+			<< temp[i].get_y() << " "
+			<< temp[i].get_vga_char() << "\n";
 }
 
 void PointVec::save_to_file(const char *filename){
@@ -73,7 +75,7 @@ void PointVec::save_to_file(FILE *fp){
 			main[i][j].print_to_file(fp);
 		}
 	}
-	fprintf(fp, "\t%d: FFFF;\n\n", addr);
+	fprintf(fp, "\t%d: FFFF;\n\n", addr++);
 }
 
 
@@ -88,14 +90,14 @@ VgaCharMatrix &PointVec::get_vga_char_matrix(void){
 			int x, y;
 			x = main[i][j].get_x();
 			y = main[i][j].get_y();
-			std::memcpy(mat[0][x][y], main[i][j].get_vga_char(), sizeof(char) * 5);
+			std::memcpy(mat[0][x][y], main[i][j].get_vga_char(), sizeof(char) * 4);
 		}
 
 	for(uint i = 0; i < temp.size(); i++){
 		int x, y;
 		x = temp[i].get_x();
 		y = temp[i].get_y();
-		std::memcpy(mat[0][x][y], temp[i].get_vga_char(), sizeof(char) * 5);
+		std::memcpy(mat[0][x][y], temp[i].get_vga_char(), sizeof(char) * 4);
 	}
 
 	return *mat;

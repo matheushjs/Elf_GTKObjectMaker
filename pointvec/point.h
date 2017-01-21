@@ -52,9 +52,9 @@ class Point {
 
 	public:
 		//Initializers
-		Point() = default;
-		Point(const int cx, const int cy) : x(cx), y(cy) {};
-		Point(const int cx, const int cy, const int caddr) : x(cx), y(cy), addr(caddr) {};
+		Point() : vga_char() {};
+		Point(const int cx, const int cy) : vga_char(), x(cx), y(cy) {};
+		Point(const int cx, const int cy, const int caddr) : vga_char(), x(cx), y(cy), addr(caddr) {};
 
 		//Accessing
 		int get_x(){ return x; };

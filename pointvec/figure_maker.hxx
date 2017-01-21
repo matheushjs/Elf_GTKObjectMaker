@@ -42,7 +42,6 @@ void FigureMaker::add_down_triangle(Point p, int w, int h){
 	//For each height, calculate the initial coordinates,
 	//  then fill to the right until we reach the width.
 	for(int i = 0; i < h; i++){
-		int lastx = -1E6;
 		int curx = std::round(i*dw);
 		
 		while(curx < w){
@@ -69,7 +68,6 @@ void FigureMaker::add_up_triangle(Point p, int w, int h){
 	//For each height, calculate the initial coordinates,
 	//  then fill to the right until we reach the width.
 	for(int i = 0; i < h; i++){
-		int lastx = -1E6;
 		int curx = std::round(i*dw);
 		
 		while(curx >= 0){

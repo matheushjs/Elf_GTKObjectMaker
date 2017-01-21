@@ -1,3 +1,9 @@
+/* FigureMaker class
+ *
+ * This class derives from PointVec, and implements functions to create figures within
+ * 	the PointVec, which can only add points.
+ */
+
 #ifndef _FIGURE_MAKER_H
 #define _FIGURE_MAKER_H
 

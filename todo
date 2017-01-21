@@ -1,6 +1,4 @@
 pointvec:
-	The point and pointvec classes are ready.
-	Now we need to bring the figure creator file here.
 	Then we need to make a wrapper file that will provide an "extern C" function that makes our global pointvec to be
 		converted into a global matrix of 1200 char[5] (possibly) that the drawer source files will use to draw on the UI.
 
