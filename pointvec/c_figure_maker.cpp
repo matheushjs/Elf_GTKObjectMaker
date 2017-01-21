@@ -67,3 +67,25 @@ void c_figure_maker_save_to_file(const CFigureMaker *fig, FILE *fp){
 void c_figure_maker_display(const CFigureMaker *fig){
 	((FigureMaker *) fig)->display();
 }
+
+void c_figure_maker_add_function(CFigureMaker *fig,
+		int x, int y, const char vga_char[5],
+		const char *comment, double(*func)(double),
+		int xi, int xe, double mx, double mf,
+		enum fill_t fill){
+	
+	Point pt(x, y);
+	if(comment) pt.append_to_comment(comment);
+	pt.set_vga_char(vga_char);
+	
+	FigureMaker::fill_t fm_fill;
+	fm_fill = (
+		fill == UP ? FigureMaker::fill_t::UP :
+		fill == DOWN ? FigureMaker::fill_t::DOWN :
+		fill == RIGHT ? FigureMaker::fill_t::RIGHT :
+		fill == LEFT ? FigureMaker::fill_t::LEFT :
+		FigureMaker::fill_t::NONE
+		);
+
+	((FigureMaker *) fig)->add_function(pt, func, xi, xe, mx, mf, fm_fill);
+}

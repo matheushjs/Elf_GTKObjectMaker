@@ -2,6 +2,7 @@
 #include <c_figure_maker.h>
 #include <draw.h>
 #include <stdio.h>
+#include <cmath>
 
 CFigureMaker *global_fig = NULL;
 struct {
@@ -14,7 +15,7 @@ struct {
 	double stretch_x, stretch_f;
 	int xi, xe; //interval
 	gchar vga_char[5];
-} global_info = { 0, "dot", "x", "None", 0, 0, 0, 0, 0.0, 0.0, 0, 0, "" };
+} global_info = { 0, "dot", "x", "None", 0, 0, 0, 0, 1.0, 1.0, 0, 0, "" };
 
 static
 void destroy_global_fig(){
@@ -172,6 +173,38 @@ void vga_char_buffer_store(GtkEntry *ent){
 	g_stpcpy(global_info.vga_char, text);
 }
 
+double f1(double x){ return x; }
+double f2(double x){ return std::fabs(x); }
+double f3(double x){ return x*x; }
+double f4(double x){ return x*x*x; }
+double f5(double x){ return std::fabs(x*x*x); }
+double f6(double x){ return std::cos(x); }
+double f7(double x){ return std::fabs(std::cos(x)); }
+double f8(double x){ return std::sin(x); }
+double f9(double x){ return std::fabs(std::sin(x)); }
+double f10(double x){ return std::pow(2,x); }
+double (*choose_shape_function())(double){
+	if(g_ascii_strcasecmp(global_info.func_type, "x") == 0) return f1;
+	else if(g_ascii_strcasecmp(global_info.func_type, "|x|") == 0) return f2;
+	else if(g_ascii_strcasecmp(global_info.func_type, "x**2") == 0) return f3;
+	else if(g_ascii_strcasecmp(global_info.func_type, "x**3") == 0) return f4;
+	else if(g_ascii_strcasecmp(global_info.func_type, "|x**3|") == 0) return f5;
+	else if(g_ascii_strcasecmp(global_info.func_type, "cos(x)") == 0) return f6;
+	else if(g_ascii_strcasecmp(global_info.func_type, "|cos(x)|") == 0) return f7;
+	else if(g_ascii_strcasecmp(global_info.func_type, "sin(x)") == 0) return f8;
+	else if(g_ascii_strcasecmp(global_info.func_type, "|sin(x)|") == 0) return f9;
+	else if(g_ascii_strcasecmp(global_info.func_type, "2**x") == 0) return f10;
+	else return f1;
+}
+
+enum fill_t choose_filling(){
+	if(g_ascii_strcasecmp(global_info.fill, "up") == 0) return UP;
+	else if(g_ascii_strcasecmp(global_info.fill, "down") == 0) return DOWN;
+	else if(g_ascii_strcasecmp(global_info.fill, "left") == 0) return LEFT;
+	else if(g_ascii_strcasecmp(global_info.fill, "right") == 0) return RIGHT;
+	else return NONE;
+}
+
 static
 void create_figure_activated(GtkWidget *wid){
 	guint k;
@@ -199,8 +232,19 @@ void create_figure_activated(GtkWidget *wid){
 		c_figure_maker_add_down_triangle(global_fig, global_info.x, global_info.y, global_info.vga_char, comm, global_info.width, global_info.height);
 		c_figure_maker_merge(global_fig);
 	} else if(g_ascii_strcasecmp(global_info.shape, "function") == 0){
-		comm = g_strdup_printf("Function (%d, %d) w: %d, h: %d", global_info.x, global_info.y, global_info.width, global_info.height);
-		//function here.
+		if(global_info.xi > global_info.xe){
+			int aux = global_info.xi;
+			global_info.xi = global_info.xe;
+			global_info.xe = aux;
+		}
+		comm = g_strdup_printf("Function %s (%d, %d) interval: [%d,%d]", global_info.func_type, global_info.x, global_info.y, global_info.xi, global_info.xe);
+		double (*func)(double) = choose_shape_function();
+		enum fill_t fill = choose_filling();
+		c_figure_maker_add_function(global_fig, global_info.x, global_info.y,
+				global_info.vga_char, comm, func,
+				global_info.xi, global_info.xe,
+				global_info.stretch_x, global_info.stretch_f,
+				fill);
 		c_figure_maker_merge(global_fig);
 	} else g_assert(FALSE);
 

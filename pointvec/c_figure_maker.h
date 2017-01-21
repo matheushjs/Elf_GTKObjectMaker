@@ -7,6 +7,7 @@
 
 typedef char VgaCharMatrix[40][30][5];
 typedef void CFigureMaker;
+enum fill_t { NONE, UP, DOWN, RIGHT, LEFT };
 
 #ifdef __cplusplus
 extern "C"{
@@ -41,7 +42,17 @@ void c_figure_maker_destroy_matrix(VgaCharMatrix *m);
 void c_figure_maker_save_to_file(const CFigureMaker *fig, FILE *fp);
 void c_figure_maker_display(const CFigureMaker *fig);
 
-
+//Adds the shape of a function.
+//Point (x,y) represents the (0,0).
+//Function is applied at interval [xi,xe], but translated to x=0.
+//mx multiplicates the domain f(mx * x).
+//mf multiplicates the image mf*f(x).
+//The filling is decided by fill.
+void c_figure_maker_add_function(CFigureMaker *fig,
+		int x, int y, const char vga_char[5],
+		const char *comment, double(*func)(double),
+		int xi, int xe, double mx, double mf,
+		enum fill_t fill);
 
 #ifdef __cplusplus
 }

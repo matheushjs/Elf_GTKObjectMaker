@@ -78,4 +78,61 @@ void FigureMaker::add_up_triangle(Point p, int w, int h){
 	}
 }
 
+void FigureMaker::add_function(Point p, double(*func)(double), int xi, int xe, double mx, double mf, enum fill_t fill){
+	bool checker[40][30] = {{}}; //Should initialize to false.
+
+	int initx, inity, x, y;
+	initx = p.get_x();
+	inity = p.get_y();
+
+	for(double i = xi; i <= xe; i+=0.05){
+		double im;
+		im = mf*func(mx*(double)i);
+
+		x = initx + (i - xi);
+		y = inity + std::round(im);
+
+		if(x >= 0 && x < 40 && y >= 0 && y < 30)
+			if(!checker[x][y]){
+				checker[x][y] = true;
+				p.set_xy(x, y);
+				this->add(p);
+			}
+
+		if(fill == RIGHT){
+			for(; x < 40; x++)
+				if(x >= 0 && x < 40 && y >= 0 && y < 30)
+					if(!checker[x][y]){
+						checker[x][y] = true;
+						p.set_xy(x, y);
+						this->add(p);
+					}
+		}else if(fill == LEFT){
+			for(; x >= 0; x--)
+				if(x >= 0 && x < 40 && y >= 0 && y < 30)
+					if(!checker[x][y]){
+						checker[x][y] = true;
+						p.set_xy(x, y);
+						this->add(p);
+					}
+		}else if(fill == UP){
+			for(; y < 30; y++)
+				if(x >= 0 && x < 40 && y >= 0 && y < 30)
+					if(!checker[x][y]){
+						checker[x][y] = true;
+						p.set_xy(x, y);
+						this->add(p);
+					}
+		}else if(fill == LEFT){
+			for(; y >= 0; y--)
+				if(x >= 0 && x < 40 && y >= 0 && y < 30)
+					if(!checker[x][y]){
+						checker[x][y] = true;
+						p.set_xy(x, y);
+						this->add(p);
+					}
+		}
+	}
+}
+
 #endif
