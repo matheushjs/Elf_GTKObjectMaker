@@ -15,7 +15,9 @@ struct {
 	double stretch_x, stretch_f;
 	int xi, xe; //interval
 	gchar vga_char[5];
-} global_info = { 0, "dot", "x", "None", 0, 0, 0, 0, 1.0, 1.0, 0, 0, "" };
+
+	gchar filename[256];
+} global_info = { 0, "dot", "x", "None", 0, 0, 0, 0, 1.0, 1.0, 0, 0, "", "" };
 
 static
 void destroy_global_fig(){
@@ -119,16 +121,6 @@ void shape_box_demux(GtkRadioButton *but){
 	else if(g_strcmp0(name, "dot") == 0)
 		gtk_container_foreach(GTK_CONTAINER(win), GtkCallback(show_hide_foreach), GINT_TO_POINTER(3));
 	else g_assert(FALSE);
-
-	printf("%d\n", global_info.init_addr);
-	printf("%s\n", global_info.shape);
-	printf("%s\n", global_info.func_type);
-	printf("%s\n", global_info.fill);
-	printf("x,y: %d %d\n", global_info.x, global_info.y);
-	printf("w,h: %d %d\n", global_info.width, global_info.height);
-	printf("w,h: %lf %lf\n", global_info.stretch_x, global_info.stretch_f);
-	printf("xi,xe: %d %d\n", global_info.xi, global_info.xe);
-	printf("%s\n", global_info.vga_char);
 }
 
 static
@@ -265,6 +257,14 @@ void undo_activated(GtkWidget *wid){
 }
 
 static
+void save_activated(GtkWidget *wid){
+	FILE *fp;
+	fp = fopen(global_info.filename, "w");
+	c_figure_maker_save_to_file(global_fig, fp);
+	fclose(fp);
+}
+
+static
 void register_signal_handlers(GtkBuilder *build){
 	gtk_builder_add_callback_symbol(build, "destroy_global_fig", G_CALLBACK(destroy_global_fig));
 	gtk_builder_add_callback_symbol(build, "init_address_activate", G_CALLBACK(init_address_activate));
@@ -275,12 +275,24 @@ void register_signal_handlers(GtkBuilder *build){
 	gtk_builder_add_callback_symbol(build, "vga_char_buffer_store", G_CALLBACK(vga_char_buffer_store));
 	gtk_builder_add_callback_symbol(build, "create_figure_activated", G_CALLBACK(create_figure_activated));
 	gtk_builder_add_callback_symbol(build, "undo_activated", G_CALLBACK(undo_activated));
+	gtk_builder_add_callback_symbol(build, "save_activated", G_CALLBACK(save_activated));
+}
+
+static
+void get_filename(){
+	GDateTime *t = g_date_time_new_now_utc();
+	gchar *f = g_date_time_format(t, "output_files/output_%mm_%dd_%Hh_%Mm_%Ss.txt");
+	g_stpcpy(global_info.filename, f);
+	g_free(f);
+	g_date_time_unref(t);
 }
 
 GtkWindow *main_UI_build_window(){
 	GtkBuilder *build;
 	GtkWindow *win;
 	GtkDrawingArea *da;
+	
+	get_filename();
 
 	build = gtk_builder_new_from_file("/home/mathjs/ComputerS/"
 			"projects/gtk_object_maker_sisdig/user_interface/main_UI.glade");

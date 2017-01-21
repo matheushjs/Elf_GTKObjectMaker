@@ -21,7 +21,6 @@ void PointVec::add(Point p){
 
 //Merges even if temp is empty.
 void PointVec::merge(){
-	cout << "Merging\n";
 	main.resize(main.size()+1);
 	main[main.size()-1].swap(temp);
 	temp.clear();
