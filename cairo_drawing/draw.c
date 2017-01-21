@@ -2,6 +2,62 @@
 #include <c_figure_maker.h>
 
 static
+void decide_color(cairo_t *cr, GdkRGBA *color, char col){
+	switch(g_ascii_tolower(col)){
+		case '0':
+			g_assert(gdk_rgba_parse(color, "#000000"));
+			break;
+		case '1':
+			g_assert(gdk_rgba_parse(color, "dark red"));
+			break;
+		case '2':
+			g_assert(gdk_rgba_parse(color, "dark green"));
+			break;
+		case '3':
+			g_assert(gdk_rgba_parse(color, "#888800"));
+			break;
+		case '4':
+			g_assert(gdk_rgba_parse(color, "dark blue"));
+			break;
+		case '5':
+			g_assert(gdk_rgba_parse(color, "#880088"));
+			break;
+		case '6':
+			g_assert(gdk_rgba_parse(color, "dark cyan"));
+			break;
+		case '7':
+			g_assert(gdk_rgba_parse(color, "#c0c0c0"));
+			break;
+		case '8':
+			g_assert(gdk_rgba_parse(color, "gray"));
+			break;
+		case '9':
+			g_assert(gdk_rgba_parse(color, "red"));
+			break;
+		case 'a':
+			g_assert(gdk_rgba_parse(color, "#00ff00"));
+			break;
+		case 'b':
+			g_assert(gdk_rgba_parse(color, "yellow"));
+			break;
+		case 'c':
+			g_assert(gdk_rgba_parse(color, "blue"));
+			break;
+		case 'd':
+			g_assert(gdk_rgba_parse(color, "magenta"));
+			break;
+		case 'e':
+			g_assert(gdk_rgba_parse(color, "cyan"));
+			break;
+		case 'f':
+			g_assert(gdk_rgba_parse(color, "white"));
+			break;
+	}
+	
+	gdk_cairo_set_source_rgba(cr, color);
+}
+
+static
 void draw_figures(cairo_t *cr, guint w, guint h, const CFigureMaker *fig){
 	int i, j;
 	double x, y, dw, dh;
@@ -11,14 +67,16 @@ void draw_figures(cairo_t *cr, guint w, guint h, const CFigureMaker *fig){
 	dw = w/40.0;
 	dh = h/30.0;
 
-	g_assert(gdk_rgba_parse(&color, "blue"));
-	gdk_cairo_set_source_rgba(cr, &color);
-	
 	mat = c_figure_maker_get_matrix(fig);
 
 	for(i = 0; i < 40; i++){
+		char control_char = 'x'; //efficiency.
 		for(j = 0; j < 30; j++){
 			if((*mat)[i][j][0] != '\0'){
+				if((*mat)[i][j][1] != control_char){
+					decide_color(cr, &color, (*mat)[i][j][1]);
+					control_char = (*mat)[i][j][1];
+				}
 				x = i*dw;
 				y = (29-j)*dh;
 				cairo_rectangle(cr, x, y, dw, dh);
