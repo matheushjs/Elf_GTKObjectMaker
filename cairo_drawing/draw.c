@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 #include <c_figure_maker.h>
+#include <string.h>
+#include <math.h>
 
 static
 void decide_color(cairo_t *cr, GdkRGBA *color, char col){
@@ -58,11 +60,16 @@ void decide_color(cairo_t *cr, GdkRGBA *color, char col){
 }
 
 static
-void draw_figures(cairo_t *cr, guint w, guint h, const CFigureMaker *fig){
+void draw_figures(cairo_t *cr, guint w, guint h, const CFigureMaker *fig, guint transw, guint transh){
 	int i, j;
 	double x, y, dw, dh;
 	VgaCharMatrix *mat;
 	GdkRGBA color;
+
+	cairo_save(cr);
+	cairo_translate(cr, transw, transh);
+	w -= transw*2;
+	h -= transh*2;
 
 	dw = w/40.0;
 	dh = h/30.0;
@@ -86,6 +93,47 @@ void draw_figures(cairo_t *cr, guint w, guint h, const CFigureMaker *fig){
 	}
 
 	c_figure_maker_destroy_matrix(mat);
+	cairo_restore(cr);
+}
+
+static
+void draw_ruler(cairo_t *cr, guint w, guint h){
+	double hor_square_size, ver_square_size; //size of each square.
+	hor_square_size = w/42.0;
+	ver_square_size = h/32.0;
+
+	double hor_pos, ver_pos; //Place within each square where text should be printed.
+
+	cairo_set_source_rgb(cr, 0, 0, 0);
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr, 12);
+
+	int i, j;
+	gchar *text;
+	for(j = 0; j < 2; j++){
+		ver_pos = (j == 0 ? 0.75 : 31.75) * ver_square_size;
+		for(i = 0; i < 40; i++){
+			text = g_strdup_printf("%d", i);
+			hor_pos = hor_square_size/(pow(3.0, strlen(text))); //To attempt to center multi-digit numbers
+			
+			cairo_move_to(cr, hor_pos + (hor_square_size * (i+1)), ver_pos);
+			cairo_show_text(cr, text);
+			g_free(text);
+		}
+	}
+
+	for(j = 0; j < 2; j++){
+		for(i = 0; i < 30; i++){
+			text = g_strdup_printf("%d", (29-i));
+			hor_pos = hor_square_size/(pow(3.0, strlen(text))); //To attempt to center multi-digit numbers
+			hor_pos += hor_square_size * (j == 1 ? 41.0 : 0);
+			ver_pos = ver_square_size/1.5;
+
+			cairo_move_to(cr, hor_pos, ver_pos + (ver_square_size * (i+1)));
+			cairo_show_text(cr, text);
+			g_free(text);
+		}
+	}
 }
 
 gboolean
@@ -97,35 +145,8 @@ draw_vga_char_matrix(GtkWidget *wid, cairo_t *cr, gpointer fig){
 	width = gtk_widget_get_allocated_width(wid);
 	height = gtk_widget_get_allocated_height(wid);
 
-	draw_figures(cr, width, height, *(CFigureMaker **) fig);
-
-	/*
-
-	cairo_arc(cr, width/2.0, height/2.0,
-			MIN(width, height) / 2.5,
-			0, 2 * G_PI);
-	*/
-
-	/*
-	cairo_set_source_rgb(cr, 1, 1, 1);
-	cairo_rectangle(cr, 0, 0, width, height);
-	cairo_fill(cr);
-
-	cairo_set_line_width(cr, 10);
-	cairo_rectangle(cr, 0, 0, width, height);
-	cairo_stroke(cr);
-	*/
-
-	/*
-	cairo_pattern_t *pat;
-	pat = cairo_pattern_create_radial(20, 20, 30, width-20, height-20, 30);
-	cairo_pattern_add_color_stop_rgb(pat, 0, 0, 0, 1);
-	cairo_pattern_add_color_stop_rgb(pat, 1, 1, 0, 0);
-
-	cairo_rectangle(cr, 0, 0, width, height);
-	cairo_set_source(cr, pat);
-	cairo_fill(cr);
-	*/
+	draw_ruler(cr, width, height);
+	draw_figures(cr, width, height, *(CFigureMaker **) fig, width/42.0, height/32.0);
 
 	return FALSE;
 }
