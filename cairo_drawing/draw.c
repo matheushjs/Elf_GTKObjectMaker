@@ -2,9 +2,90 @@
 #include <c_figure_maker.h>
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
+
+static gchar *global_filename = NULL;
+static gboolean present_charmap = FALSE;
+
+typedef unsigned char PixMap[8];
+static PixMap global_pixmap[256];
+
+static inline
+void uchar_set_bit(unsigned char *c, int bit){ (*c) |= 1<<bit; }
+
+static inline
+unsigned char uchar_get_bit(unsigned char c, int bit){ return c & (1<<bit); }
+
+static inline
+double double_round(double x, int prec){
+	double power = pow(10, prec);
+	return round(x*power)/power;
+}
 
 static
-void decide_color(cairo_t *cr, GdkRGBA *color, char col){
+void add_pixmap(int addr, char *bits){
+	int char_index = addr/8;
+	int bits_index = addr%8;
+	int i;
+
+	unsigned char *main = &global_pixmap[char_index][bits_index];
+	for(i = 0; i < 8; i++)
+		if(bits[7-i] == '1')
+			uchar_set_bit(main, i);
+}
+
+static
+void add_pixmap_mult(int addr0, int addr1, char *bits){
+	int char_index = addr0/8;
+	int bits_index = addr0%8;
+	int i;
+
+	unsigned char *main = &global_pixmap[char_index][bits_index];
+	unsigned char *target = main + (addr1 - addr0);
+	for(; main <= target; main++){
+		for(i = 0; i < 8; i++)
+			if(bits[7-i] == '1')
+				uchar_set_bit(main, i);
+	}
+}
+
+static
+void read_charmap(const gchar *filename){
+	FILE *fp = fopen(filename, "r");
+	g_assert(fp);
+
+	char line[100];
+	int addr0, addr1;
+	char bits[9];
+	while(fscanf(fp, "%[^\n]\n", line) != EOF){
+		if(sscanf(line, " [ %d .. %d ] : %8[01]", &addr0, &addr1, bits) == 3){
+			add_pixmap_mult(addr0, addr1, bits);
+		} else if(sscanf(line, " %d : %8[01]", &addr0, bits) == 2){
+			add_pixmap(addr0, bits);
+		}
+	}
+}
+
+void cairo_set_filename(const gchar *filename){
+	if(global_filename) g_free(global_filename);
+	global_filename = g_strdup(filename);
+	read_charmap(global_filename);
+}
+
+void cairo_free_filename(){
+	g_free(global_filename);
+}
+
+void cairo_set_presentation(){
+	present_charmap = TRUE;
+}
+
+void cairo_unset_presentation(){
+	present_charmap = FALSE;
+}
+
+static
+void decide_color(GdkRGBA *color, char col){
 	switch(g_ascii_tolower(col)){
 		case '0':
 			g_assert(gdk_rgba_parse(color, "#000000"));
@@ -55,8 +136,29 @@ void decide_color(cairo_t *cr, GdkRGBA *color, char col){
 			g_assert(gdk_rgba_parse(color, "white"));
 			break;
 	}
-	
-	gdk_cairo_set_source_rgba(cr, color);
+}
+
+static
+void draw_char(cairo_t *cr, double x, double y, double width, double height, GdkRGBA *color, char obj[5]){
+	guint object_id;
+
+	width /= 8;
+	height /= 8;
+
+	sscanf(obj+2, "%x", &object_id); //Will read the last 2 hexadecimal numbers.
+	unsigned char *char_pointer = global_pixmap[object_id];
+
+	int i, j;
+	for(i = 0; i < 8; i++){
+		for(j = 0; j < 8; j++){
+			if(uchar_get_bit(*char_pointer, 7-j)){
+				gdk_cairo_set_source_rgba(cr, color);
+			} else cairo_set_source_rgb(cr, 0, 0, 0);
+			cairo_rectangle(cr, x+(j*width), y+(i*height), width, height);
+			cairo_fill(cr);
+		}
+		char_pointer++;
+	}
 }
 
 static
@@ -81,13 +183,18 @@ void draw_figures(cairo_t *cr, guint w, guint h, const CFigureMaker *fig, guint 
 		for(j = 0; j < 30; j++){
 			if((*mat)[i][j][0] != '\0'){
 				if((*mat)[i][j][1] != control_char){
-					decide_color(cr, &color, (*mat)[i][j][1]);
+					decide_color(&color, (*mat)[i][j][1]);
 					control_char = (*mat)[i][j][1];
 				}
+				
 				x = i*dw;
 				y = (29-j)*dh;
-				cairo_rectangle(cr, x, y, dw, dh);
-				cairo_fill(cr);
+				if(global_filename) draw_char(cr, x, y, dw, dh, &color, (*mat)[i][j]);
+				else{
+					gdk_cairo_set_source_rgba(cr, &color);
+					cairo_rectangle(cr, x, y, dw, dh);
+					cairo_fill(cr);
+				}
 			}
 		}
 	}
@@ -136,17 +243,44 @@ void draw_ruler(cairo_t *cr, guint w, guint h){
 	}
 }
 
+static
+void draw_charmap(cairo_t *cr, double w, double h){
+	double dw, dh, iw, ih;
+	int i, j;
+	GdkRGBA color;
+	char obj[5];
+	char *p = obj+2;
+
+	gdk_rgba_parse(&color, "white");
+
+	dw = w/16.0;
+	dh = h/16.0;
+	iw = 0.25*dw;
+	ih = 0.25*dh;
+
+	unsigned int k = 0;
+	for(j = 0; j < 16; j++){
+		for(i = 0; i < 16; i++){
+			sprintf(p, "%2x", k++);
+			draw_char(cr, iw+(i*dw), ih+(j*dh), dw-iw, dh-ih, &color, obj);
+		}
+	}
+}
+
 gboolean
 draw_vga_char_matrix(GtkWidget *wid, cairo_t *cr, gpointer fig){
 	guint width, height;
 
-	if(*(CFigureMaker **)fig == NULL ) return FALSE;
-
 	width = gtk_widget_get_allocated_width(wid);
 	height = gtk_widget_get_allocated_height(wid);
-
-	draw_ruler(cr, width, height);
-	draw_figures(cr, width, height, *(CFigureMaker **) fig, width/42.0, height/32.0);
+	
+	if(!present_charmap){
+		if(*(CFigureMaker **)fig == NULL ) return FALSE;
+		draw_ruler(cr, width, height);
+		draw_figures(cr, width, height, *(CFigureMaker **) fig, width/42.0, height/32.0);
+	} else {
+		draw_charmap(cr, width, height);
+	}
 
 	return FALSE;
 }

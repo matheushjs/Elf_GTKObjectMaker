@@ -25,6 +25,7 @@ void destroy_global_fig(){
 	if(global_fig)
 		c_figure_maker_destroy(global_fig);
 	global_fig = NULL;
+	cairo_free_filename();
 }
 
 static
@@ -68,7 +69,9 @@ void show_hide_foreach(GtkWidget *wid, gpointer data){
 		"vga_char_box",
 		"action_box",
 		"hexcodes_box",
-		"separator2"
+		"separator2",
+		"file_box",
+		"charmap_display_box"
 	};
 
 	const gchar *name = gtk_widget_get_name(wid);
@@ -343,6 +346,18 @@ void combo_box_changed(GtkWidget *wid, gpointer data){
 }
 
 static
+void file_chooser_activate(GtkFileChooserButton *widget, gpointer user_data){
+	cairo_set_filename(gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget)));
+}
+
+static
+void charmap_display_toggled(GtkToggleButton *but, gpointer user_data){
+	if(gtk_toggle_button_get_active(but)) cairo_set_presentation();
+	else cairo_unset_presentation();
+	gtk_widget_queue_draw(GTK_WIDGET(user_data));
+}
+
+static
 void register_signal_handlers(GtkBuilder *build){
 	gtk_builder_add_callback_symbol(build, "destroy_global_fig", G_CALLBACK(destroy_global_fig));
 	gtk_builder_add_callback_symbol(build, "init_address_activate", G_CALLBACK(init_address_activate));
@@ -356,6 +371,8 @@ void register_signal_handlers(GtkBuilder *build){
 	gtk_builder_add_callback_symbol(build, "save_activated", G_CALLBACK(save_activated));
 	gtk_builder_add_callback_symbol(build, "drawing_area_press", G_CALLBACK(drawing_area_press));
 	gtk_builder_add_callback_symbol(build, "combo_box_changed", G_CALLBACK(combo_box_changed));
+	gtk_builder_add_callback_symbol(build, "file_chooser_activate", G_CALLBACK(file_chooser_activate));
+	gtk_builder_add_callback_symbol(build, "charmap_display_toggled", G_CALLBACK(charmap_display_toggled));
 }
 
 static
