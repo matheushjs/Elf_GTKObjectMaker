@@ -16,6 +16,21 @@
     <property name="step_increment">0.5</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-save</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-undo</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-add</property>
+  </object>
   <object class="GtkAdjustment" id="interval_adjustment">
     <property name="lower">-1000</property>
     <property name="upper">1000</property>
@@ -27,6 +42,62 @@
     <property name="upper">1000</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+  </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name Colors -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Black</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Dark Red</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Dark Green</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Dark Yellow</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Dark Blue</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Dark Pink</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Dark Cyan</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Light Gray</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Gray</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Red</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Green</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Yellow</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Blue</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Pink</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Cyan</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">White</col>
+      </row>
+    </data>
   </object>
   <object class="GtkAdjustment" id="x_adjustment">
     <property name="upper">39</property>
@@ -594,7 +665,9 @@
                   <object class="GtkLabel" id="label4">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Starting Point:</property>
+                    <property name="label" translatable="yes">Starting Point:
+(Try Clicking the Display)</property>
+                    <property name="justify">center</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -952,11 +1025,14 @@ to function)</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkButton" id="button2">
-                    <property name="label" translatable="yes">Create Figure</property>
+                    <property name="label" translatable="yes">_Create Figure</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="image">image3</property>
+                    <property name="always_show_image">True</property>
                     <signal name="clicked" handler="create_figure_activated" object="drawing_area" swapped="yes"/>
+                    <accelerator key="c" signal="clicked" modifiers="GDK_SHIFT_MASK"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -966,13 +1042,14 @@ to function)</property>
                 </child>
                 <child>
                   <object class="GtkButton" id="button1">
-                    <property name="label">gtk-undo</property>
+                    <property name="label">_Undo</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_stock">True</property>
+                    <property name="image">image2</property>
                     <property name="always_show_image">True</property>
                     <signal name="clicked" handler="undo_activated" object="drawing_area" swapped="yes"/>
+                    <accelerator key="u" signal="clicked" modifiers="GDK_SHIFT_MASK"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -982,14 +1059,14 @@ to function)</property>
                 </child>
                 <child>
                   <object class="GtkButton" id="button3">
-                    <property name="label">gtk-save</property>
+                    <property name="label">_Save</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_stock">True</property>
+                    <property name="image">image1</property>
                     <property name="always_show_image">True</property>
                     <signal name="clicked" handler="save_activated" swapped="no"/>
-                    <accelerator key="s" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
+                    <accelerator key="s" signal="clicked" modifiers="GDK_SHIFT_MASK"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -1002,6 +1079,73 @@ to function)</property>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSeparator" id="separator2">
+                <property name="name">separator2</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="hexcodes_box">
+                <property name="name">hexcodes_box</property>
+                <property name="can_focus">False</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkLabel" id="label14">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Color HexCodes:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBox" id="combobox1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="model">liststore1</property>
+                    <property name="id_column">0</property>
+                    <signal name="changed" handler="combo_box_changed" object="entry1" swapped="no"/>
+                    <signal name="changed" handler="combo_box_changed" object="label15" swapped="no"/>
+                    <child>
+                      <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label15">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">10</property>
               </packing>
             </child>
           </object>
@@ -1029,6 +1173,9 @@ to function)</property>
             <property name="name">drawing_area</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="events">GDK_BUTTON_PRESS_MASK | GDK_STRUCTURE_MASK</property>
+            <signal name="button-press-event" handler="drawing_area_press" object="spinbutton2" swapped="no"/>
+            <signal name="button-press-event" handler="drawing_area_press" object="spinbutton3" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>

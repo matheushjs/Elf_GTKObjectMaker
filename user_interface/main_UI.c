@@ -3,6 +3,7 @@
 #include <draw.h>
 #include <stdio.h>
 #include <cmath>
+#include <cstring>
 
 CFigureMaker *global_fig = NULL;
 struct {
@@ -65,7 +66,9 @@ void show_hide_foreach(GtkWidget *wid, gpointer data){
 	{
 		"start_point_box",
 		"vga_char_box",
-		"action_box"
+		"action_box",
+		"hexcodes_box",
+		"separator2"
 	};
 
 	const gchar *name = gtk_widget_get_name(wid);
@@ -265,6 +268,81 @@ void save_activated(GtkWidget *wid){
 }
 
 static
+gboolean drawing_area_press(GtkWidget *widget, GdkEvent *event, gpointer user_data){
+	guint width, height;
+	width = gtk_widget_get_allocated_width(widget);
+	height = gtk_widget_get_allocated_height(widget);
+
+	double dw, dh;
+	dw = width/42.0;
+	dh = height/32.0;
+
+	double x, y;
+	x = event->button.x;
+	y = event->button.y;
+
+	int px, py;
+	px = x/dw - 1.0;
+	py = y/dh - 1.0;
+
+	if(px < 0 || px > 39 || py < 0 || py > 29) return FALSE;
+
+	const gchar *name = gtk_widget_get_name(GTK_WIDGET(user_data));
+	if(g_strcmp0(name, "x") == 0){
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(user_data), (double) px);
+		global_info.x = px;
+	} else {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(user_data), (double) (29-py));
+		global_info.y = (29-py);
+	}
+
+	return FALSE;
+}
+
+static
+void combo_box_changed(GtkWidget *wid, gpointer data){
+	const gchar *str;
+
+	str = gtk_combo_box_get_active_id(GTK_COMBO_BOX(wid));
+	if(!str) return;
+
+	char hex;
+
+	if(g_ascii_strcasecmp(str, "black") == 0) hex = '0';
+	else if(g_ascii_strcasecmp(str, "dark red") == 0) hex = '1';
+	else if(g_ascii_strcasecmp(str, "dark green") == 0) hex = '2';
+	else if(g_ascii_strcasecmp(str, "dark yellow") == 0) hex = '3';
+	else if(g_ascii_strcasecmp(str, "dark blue") == 0) hex = '4';
+	else if(g_ascii_strcasecmp(str, "dark pink") == 0) hex = '5';
+	else if(g_ascii_strcasecmp(str, "dark cyan") == 0) hex = '6';
+	else if(g_ascii_strcasecmp(str, "light gray") == 0) hex = '7';
+	else if(g_ascii_strcasecmp(str, "gray") == 0) hex = '8';
+	else if(g_ascii_strcasecmp(str, "red") == 0) hex = '9';
+	else if(g_ascii_strcasecmp(str, "green") == 0) hex = 'a';
+	else if(g_ascii_strcasecmp(str, "yellow") == 0) hex = 'b';
+	else if(g_ascii_strcasecmp(str, "blue") == 0) hex = 'c';
+	else if(g_ascii_strcasecmp(str, "pink") == 0) hex = 'd';
+	else if(g_ascii_strcasecmp(str, "cyan") == 0) hex = 'e';
+	else if(g_ascii_strcasecmp(str, "white") == 0) hex = 'f';
+
+	if(GTK_IS_ENTRY(data)){
+		const gchar *text = gtk_entry_get_text(GTK_ENTRY(data));
+		char new_text[5];
+		unsigned int i;
+
+		for(i = 0; i < std::strlen(text); i++) new_text[i] = text[i];
+		while(i < 4) new_text[i++] = '0';
+		new_text[1] = hex;
+		gtk_entry_set_text(GTK_ENTRY(data), new_text);
+	}else if(GTK_IS_LABEL(data)){
+		gchar *lab;
+		lab = g_strdup_printf("HexCode: '%c'", hex);
+		gtk_label_set_text(GTK_LABEL(data), lab);
+		g_free(lab);
+	} else g_assert(FALSE);
+}
+
+static
 void register_signal_handlers(GtkBuilder *build){
 	gtk_builder_add_callback_symbol(build, "destroy_global_fig", G_CALLBACK(destroy_global_fig));
 	gtk_builder_add_callback_symbol(build, "init_address_activate", G_CALLBACK(init_address_activate));
@@ -276,6 +354,8 @@ void register_signal_handlers(GtkBuilder *build){
 	gtk_builder_add_callback_symbol(build, "create_figure_activated", G_CALLBACK(create_figure_activated));
 	gtk_builder_add_callback_symbol(build, "undo_activated", G_CALLBACK(undo_activated));
 	gtk_builder_add_callback_symbol(build, "save_activated", G_CALLBACK(save_activated));
+	gtk_builder_add_callback_symbol(build, "drawing_area_press", G_CALLBACK(drawing_area_press));
+	gtk_builder_add_callback_symbol(build, "combo_box_changed", G_CALLBACK(combo_box_changed));
 }
 
 static
