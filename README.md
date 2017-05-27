@@ -12,4 +12,4 @@ This program was finished after the deadline for the project, so it hasn't been 
 
 # Picture
 
-[example.png](Example Image)
+[./example.png](Image)
