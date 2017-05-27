@@ -11,3 +11,5 @@ This program, Elf_GTKObjectMaker, provides a GUI for creating pixel maps, and ou
 This program was finished after the deadline for the project, so it hasn't been used for anything useful. This project was mainly continued for the sake of learning how to make a user interface using C language and GTK+ library.
 
 # Picture
+
+[example.png](Example Image)
